@@ -9,7 +9,8 @@
 </head>
 <body>
 
-<div id="content" contenteditable style="border: 1px solid red"/>
+<div id="content" contenteditable style="border: 1px solid red"></div>
+<button id="test1">get current selection</button>
 <script>
   const content = document.querySelector('#content')
   // 监听用户的键盘事件
@@ -17,12 +18,35 @@
     // 禁止默认事件，不能通过键盘输入内容
     e.preventDefault();
 
+    // 最简单的实现：将用户输入追加到最后
     let userInputContent = e.data
     let newContent = content.innerText + userInputContent
     content.innerText = newContent
 
 
+    // 处理光标
+    let selection = window.getSelection()
+    let node = e.path[0].childNodes[0]
+    let range = document.createRange()
+    range.setStart(node, content.innerText.length)
+    range.collapse(true)
+    selection.removeAllRanges()
+    selection.addRange(range)
+
+
+
+
+
+
+
   })
+
+  //
+  // setInterval(()=>{
+  //   let selectionObj = window.getSelection()
+  //   console.log(selectionObj);
+  // }, 2000)
+
 </script>
 </body>
 </html>
