@@ -13,6 +13,20 @@
 <button id="test1">get current selection</button>
 <script>
   const content = document.querySelector('#content')
+
+  let map = {
+    1: '一',
+    2: '二',
+    3:'三',
+    4:'四',
+    5:'五',
+    6: '六',
+    7: '七',
+    8: '八',
+    9: '九',
+    0: '零'
+  }
+
   // 监听用户的键盘事件
   content.addEventListener('beforeinput', (e)=>{
     // 禁止默认事件，不能通过键盘输入内容
@@ -23,6 +37,11 @@
     if(inputType === 'insertText'){
       // 最简单的实现：将用户输入追加到最后
       let userInputContent = e.data
+
+      if(isNumber(userInputContent)){
+        userInputContent = map[userInputContent]
+      }
+
       let newContent = content.innerText + userInputContent
       content.innerText = newContent
       // 处理光标
@@ -51,6 +70,10 @@
     range.collapse(true)
     selection.removeAllRanges()
     selection.addRange(range) // 核心 api
+  }
+
+  function isNumber(str){
+    return !isNaN(Number(str))
   }
 
   //
