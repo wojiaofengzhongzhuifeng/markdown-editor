@@ -16,6 +16,8 @@
   <li>用户按下del键时，在当前位置往前删除一个字符</li>
   <li>如果用户输入了数字，则将其替换显示中文数字</li>
   <li>用户输入回车键，可以进行换行输入</li>
+  <li>删除某个位置单字符</li>
+
 </ol>
 
 <script>
@@ -53,9 +55,22 @@
       handleRange(e)
 
     } else if (inputType === 'deleteContentBackward'){
-      let newContent = content.innerText.slice(0, -1)
-      content.innerText = newContent
-      handleRange(e)
+      let selection = window.getSelection();
+      const {type, anchorOffset, focusOffset} = selection
+      let contentTextList = content.innerText.split('')
+      let deleteNumber = 0
+      let startNumber = 0
+      if(type === 'Caret'){
+        deleteNumber = 1
+        startNumber = anchorOffset - 1
+      } else {
+        deleteNumber = Math.abs(focusOffset - anchorOffset)
+        startNumber = Math.min(focusOffset, anchorOffset)
+      }
+      contentTextList.splice(startNumber, deleteNumber)
+
+      content.innerText = contentTextList.join('')
+      handleRange(e, startNumber)
     } else if (inputType === 'insertParagraph'){
       // 换行输入
       // 最简单的实现：将用户输入追加到最后
@@ -82,7 +97,7 @@
 
   })
 
-  function handleRange(e){
+  function handleRange(e, startNumber){
     let selection = window.getSelection()
     let node = e.path[0].childNodes[e.path[0].childNodes.length - 1]
     console.log('node', node);
@@ -93,7 +108,7 @@
       // let textLength = nodeInnerText === ' ' ? 0 :  nodeInnerText.length
 
       let range = document.createRange()
-      range.setStart(node, nodeInnerText.length)
+      range.setStart(node, startNumber ? startNumber : nodeInnerText.length)
       range.collapse(true)
       selection.removeAllRanges()
       selection.addRange(range) // 核心 api
