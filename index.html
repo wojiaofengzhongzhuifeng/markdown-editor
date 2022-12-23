@@ -15,11 +15,11 @@
   <li>用户输入a-z普通英文字符和数字，则显示对应字符</li>
   <li>用户按下del键时，在当前位置往前删除一个字符</li>
   <li>如果用户输入了数字，则将其替换显示中文数字</li>
+  <li>用户输入回车键，可以进行换行输入</li>
 </ol>
 
 <script>
   const content = document.querySelector('#content')
-
   let map = {
     1: '一',
     2: '二',
@@ -32,7 +32,6 @@
     9: '九',
     0: '零'
   }
-
   // 监听用户的键盘事件
   content.addEventListener('beforeinput', (e)=>{
     // 禁止默认事件，不能通过键盘输入内容
@@ -57,6 +56,21 @@
       let newContent = content.innerText.slice(0, -1)
       content.innerText = newContent
       handleRange(e)
+    } else if (inputType === 'insertParagraph'){
+      // 换行输入
+      // 最简单的实现：将用户输入追加到最后
+      let userInputContent = '\n'
+
+      let newContent = content.innerText + userInputContent
+      content.innerText = newContent
+
+      const newtext = document.createTextNode(' ');
+      content.appendChild(newtext)
+
+      // content.innerHTML += '&nbsp;'
+
+      // 处理光标
+      handleRange(e)
     }
 
 
@@ -70,23 +84,28 @@
 
   function handleRange(e){
     let selection = window.getSelection()
-    let node = e.path[0].childNodes[0]
-    let range = document.createRange()
-    range.setStart(node, content.innerText.length)
-    range.collapse(true)
-    selection.removeAllRanges()
-    selection.addRange(range) // 核心 api
+    let node = e.path[0].childNodes[e.path[0].childNodes.length - 1]
+    console.log('node', node);
+    if(node.nodeName === 'BR'){
+
+    } else {
+      let nodeInnerText = node.data
+      // let textLength = nodeInnerText === ' ' ? 0 :  nodeInnerText.length
+
+      let range = document.createRange()
+      range.setStart(node, nodeInnerText.length)
+      range.collapse(true)
+      selection.removeAllRanges()
+      selection.addRange(range) // 核心 api
+    }
+
+
   }
 
   function isNumber(str){
     return !isNaN(Number(str))
   }
 
-  //
-  // setInterval(()=>{
-  //   let selectionObj = window.getSelection()
-  //   console.log(selectionObj);
-  // }, 2000)
 
 </script>
 </body>
