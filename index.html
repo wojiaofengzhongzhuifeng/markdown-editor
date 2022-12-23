@@ -10,7 +10,13 @@
 <body>
 
 <div id="content" contenteditable style="border: 1px solid red"></div>
-<button id="test1">get current selection</button>
+<h2>功能说明</h2>
+<ol>
+  <li>用户输入a-z普通英文字符和数字，则显示对应字符</li>
+  <li>用户按下del键时，在当前位置往前删除一个字符</li>
+  <li>如果用户输入了数字，则将其替换显示中文数字</li>
+</ol>
+
 <script>
   const content = document.querySelector('#content')
 
