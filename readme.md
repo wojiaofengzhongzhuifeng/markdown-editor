@@ -1,5 +1,9 @@
 # markdown 编辑器
 
+## 预览链接
+
+[链接](https://wojiaofengzhongzhuifeng.github.io/markdown-editor/)
+
 ## 功能列表
 
 - 用户输入a-z普通英文字符和数字，则显示对应字符
