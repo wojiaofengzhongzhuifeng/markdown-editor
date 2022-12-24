@@ -42,65 +42,37 @@
     let {inputType} = e
 
     if(inputType === 'insertText'){
-      // 最简单的实现：将用户输入追加到最后
-      let userInputContent = e.data
-
-      if(isNumber(userInputContent)){
-        userInputContent = map[userInputContent]
-      }
-
-      let newContent = content.innerText + userInputContent
-      content.innerText = newContent
-      // 处理光标
-      handleRange(e)
-
+      // 处理用户输入值
+      handleInput(e)
     } else if (inputType === 'deleteContentBackward'){
-      let selection = window.getSelection();
-      const {type, anchorOffset, focusOffset} = selection
-      let contentTextList = content.innerText.split('')
-      let deleteNumber = 0
-      let startNumber = 0
-      if(type === 'Caret'){
-        deleteNumber = 1
-        startNumber = anchorOffset - 1
-      } else {
-        deleteNumber = Math.abs(focusOffset - anchorOffset)
-        startNumber = Math.min(focusOffset, anchorOffset)
-      }
-      contentTextList.splice(startNumber, deleteNumber)
-
-      content.innerText = contentTextList.join('')
-      handleRange(e, startNumber)
+      // 处理用户删除
+      handleDelete(e)
     } else if (inputType === 'insertParagraph'){
-      // 换行输入
-      // 最简单的实现：将用户输入追加到最后
-      let userInputContent = '\n'
-
-      let newContent = content.innerText + userInputContent
-      content.innerText = newContent
-
-      const newtext = document.createTextNode(' ');
-      content.appendChild(newtext)
-
-      // content.innerHTML += '&nbsp;'
-
-      // 处理光标
-      handleRange(e)
+      // todo 处理用户换行
+      // handleWordBreak(e)
     }
-
-
-
-
-
-
-
-
   })
 
+  function handleInput(e){
+    // 最简单的实现：将用户输入追加到最后
+    let userInputContent = e.data
+
+    if(isNumber(userInputContent)){
+      userInputContent = map[userInputContent]
+    }
+
+    let newContent = content.innerText + userInputContent
+    content.innerText = newContent
+    // 处理光标
+    handleRange(e)
+  }
+
+  // 使用js控制光标位置
   function handleRange(e, startNumber){
     let selection = window.getSelection()
     let node = e.path[0].childNodes[e.path[0].childNodes.length - 1]
     console.log('node', node);
+    if(!node){return}
     if(node.nodeName === 'BR'){
 
     } else {
@@ -108,13 +80,55 @@
       // let textLength = nodeInnerText === ' ' ? 0 :  nodeInnerText.length
 
       let range = document.createRange()
-      range.setStart(node, startNumber ? startNumber : nodeInnerText.length)
+      range.setStart(node, isNumber(startNumber) ? startNumber : nodeInnerText.length)
       range.collapse(true)
       selection.removeAllRanges()
       selection.addRange(range) // 核心 api
     }
 
 
+  }
+  function handleDelete(e){
+    let selection = window.getSelection();
+    const {type, anchorOffset, focusOffset} = selection
+    let contentTextList = content.innerText.split('')
+    let deleteNumber = 0
+    let startNumber = 0
+    if(type === 'Caret'){
+      // 特殊情况：光标在初始位置，尝试删除操作，这时候不能删除任何内容
+      if(anchorOffset === 0){
+        startNumber = 0
+        deleteNumber = 0
+      } else {
+        startNumber = anchorOffset - 1
+        deleteNumber = 1
+      }
+
+    } else {
+      deleteNumber = Math.abs(focusOffset - anchorOffset)
+      startNumber = Math.min(focusOffset, anchorOffset)
+    }
+    contentTextList.splice(startNumber, deleteNumber)
+
+    content.innerText = contentTextList.join('')
+    handleRange(e, startNumber)
+  }
+
+  function handleWordBreak(e){
+    // 换行输入
+    // 最简单的实现：将用户输入追加到最后
+    let userInputContent = '\n'
+
+    let newContent = content.innerText + userInputContent
+    content.innerText = newContent
+
+    const newtext = document.createTextNode(' ');
+    content.appendChild(newtext)
+
+    // content.innerHTML += '&nbsp;'
+
+    // 处理光标
+    handleRange(e)
   }
 
   function isNumber(str){
