@@ -13,11 +13,10 @@
 <h2>功能说明</h2>
 <ol>
   <li>用户输入a-z普通英文字符和数字，则显示对应字符</li>
-  <li>用户按下del键时，在当前位置往前删除一个字符</li>
+  <li>删除任意位置的字符串</li>
   <li>如果用户输入了数字，则将其替换显示中文数字</li>
   <li><del>用户输入回车键，可以进行换行输入</del></li>
-  <li>删除某个位置单字符</li>
-  <li>在非末尾新增字符</li>
+  <li>允许用户通过 **黑体** 定义黑体样式</li>
 </ol>
 
 <script>
@@ -38,7 +37,6 @@
   content.addEventListener('beforeinput', (e)=>{
     // 禁止默认事件，不能通过键盘输入内容
     e.preventDefault();
-    console.log(e);
     let {inputType} = e
 
     if(inputType === 'insertText'){
@@ -57,12 +55,24 @@
     // 最简单的实现：将用户输入追加到最后
     let userInputContent = e.data
 
+    // 将用户输入的数字转化为中文数字
     if(isNumber(userInputContent)){
       userInputContent = map[userInputContent]
     }
 
-    let newContent = content.innerText + userInputContent
-    content.innerText = newContent
+    let newContent = content.innerHTML + userInputContent
+    // 处理黑体样式
+    if(userInputContent === '*'){
+      let contentCharList = newContent.split('**').filter(Boolean)
+      if(contentCharList.length === 2 && contentCharList[contentCharList.length - 1][contentCharList[contentCharList.length - 1].length - 1] !== '*'){
+
+        newContent = contentCharList[0] + `<b>${contentCharList[1]}</b>`
+        console.log('加粗', contentCharList[0]);
+      }
+      console.log('contentCharList', contentCharList, );
+    }
+
+    content.innerHTML = newContent
     // 处理光标
     handleRange(e)
   }
@@ -71,20 +81,20 @@
   function handleRange(e, startNumber){
     let selection = window.getSelection()
     let node = e.path[0].childNodes[e.path[0].childNodes.length - 1]
-    console.log('node', node);
+    let nodeInnerText
     if(!node){return}
     if(node.nodeName === 'BR'){
 
+    } else if (node.nodeName === 'B'){
+      nodeInnerText = node.innerText
     } else {
-      let nodeInnerText = node.data
-      // let textLength = nodeInnerText === ' ' ? 0 :  nodeInnerText.length
-
-      let range = document.createRange()
-      range.setStart(node, isNumber(startNumber) ? startNumber : nodeInnerText.length)
-      range.collapse(true)
-      selection.removeAllRanges()
-      selection.addRange(range) // 核心 api
+      nodeInnerText = node.data
     }
+    let range = document.createRange()
+    range.setStart(node, isNumber(startNumber) ? startNumber : nodeInnerText.length)
+    range.collapse(true)
+    selection.removeAllRanges()
+    selection.addRange(range) // 核心 api
 
 
   }
