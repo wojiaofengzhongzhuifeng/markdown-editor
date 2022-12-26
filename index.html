@@ -109,13 +109,25 @@ class Editor{
 /*
 * 理解：
 * 1. Operation 的实例是一个对象，这个对象的属性说明如何修改原数据，方法直接调用 model 层抛出的方法
-* 2. 这个层用于生成所有操作model 的原子数据，后续可以
+* 2. 按照正常，可以直接使用model 层操作数据，添加operation 层的意义是将外部逻辑（如接入后端，协作）放到这层
 * */
-class InsertTextOperation{
+class InsertTextOperation extends Operation{
   _spacers = ''
   _insertIndex = 0
   apply(editor){
     editor.getTextModel().insert(this._insertIndex, this._spacers)
+    super.apply() // 调用 operation 的公共apply 方法
+  }
+}
+class RemoveTextOperation extends Operation{
+  _startIndex = 0
+  _endIndex = 0
+  apply(editor){
+  }
+}
+class Operation{
+  apply(){
+    // todo 可以接入后端
   }
 }
 </script>
