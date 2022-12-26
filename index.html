@@ -21,14 +21,34 @@
 
 <!--event 层-->
 <script>
-  class KeyboardEventHandler {
-    constructor() {
+  class KeyboardEventHandler{
+    constructor(target, editor) {
+      this.target = target
+      this.editor = editor
+    }
+
+    _beforeInputHandler(e){
+      console.log(this);
+      const inputType = e.inputType
+      e.preventDefault()
+      if(inputType === 'insertText'){
+        const text = e.data
+        if(text){
+          this.editor.insertTextAtCursor(text)
+        }
+      }
+    }
+
+    addEventListener(){
+      // 为什么绑定函数的时候，不直接使用匿名函数？因为后续可能有解绑操作，如果使用匿名函数无法解绑
+      this.target.addEventListener('beforeinput', this._beforeInputHandler)
     }
   }
 </script>
 
 <!--Editor 层: 控制层-->
 <script>
+
 </script>
 
 <!--数据层-->
