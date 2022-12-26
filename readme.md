@@ -16,7 +16,7 @@
 ## 架构分层图
 
 - Event 
-- Edit
+- Editor: 控制器
 - Operation
 - Model
 - View
