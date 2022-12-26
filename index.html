@@ -19,7 +19,11 @@
   <li>允许用户通过 **黑体** 定义黑体样式</li>
 </ol>
 
-<!--event 层-->
+<!--
+event 层作用
+- 监听事件
+- 根据用户的输入，调用editor 层的不同方法
+-->
 <script>
   class KeyboardEventHandler{
     constructor(target, editor) {
@@ -46,7 +50,10 @@
   }
 </script>
 
-<!--Editor 层: 控制层-->
+<!--
+Editor 层: 控制层
+作用：将用户的 action 拆解成原子操作
+-->
 <script>
 class Editor{
   constructor(target) {
