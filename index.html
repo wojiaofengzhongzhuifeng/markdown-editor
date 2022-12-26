@@ -63,12 +63,19 @@ class Editor{
     // todo 为什么这里传this ?
     // todo 为什么这里新建的方式是
     this.eventHandler = new KeyboardEventHandler(this.target, this)
+    this.textModel = new TextModel()
   }
   insertTextAtCursor(text){
     // 通过 selection-model 选取模型判断是否有选区
     // 生成原子操作，比如删除区间、插入字符串等（Operation） todo Operation 、model、editor 三层如何协作？
     // 调用 text-model 数据模型，操作数据
     // 调用selection-model 选取模型更新光标位置
+    const currentSelection = this.selectionModel.getCurrentSelection()
+    const insertOperation = new InsertTextOperation(currentSelection.index, text)
+    insertOperation.apply()
+  }
+  getTextModel(){
+    return this.textModel
   }
 }
 </script>
@@ -95,6 +102,22 @@ class Editor{
       return this._spacers
     }
   }
+</script>
+
+<!--原子操作层 Operation-->
+<script>
+/*
+* 理解：
+* 1. Operation 的实例是一个对象，这个对象的属性说明如何修改原数据，方法直接调用 model 层抛出的方法
+* 2. 这个层用于生成所有操作model 的原子数据，后续可以
+* */
+class InsertTextOperation{
+  _spacers = ''
+  _insertIndex = 0
+  apply(editor){
+    editor.getTextModel().insert(this._insertIndex, this._spacers)
+  }
+}
 </script>
 
 <!--视图层-->
