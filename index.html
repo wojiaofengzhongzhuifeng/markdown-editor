@@ -99,6 +99,19 @@ class Editor{
 
 <!--视图层-->
 <script>
+  class SourceCodeView{
+    constructor(textModel, selectionModel, target) {
+      this.textModel = textModel
+      this.selctionModel = selectionModel
+      this.target = target
+    }
+    init(){
+      this.textModel.on('text-change',()=>{
+        this.target.innerHTML = this.textModel.getAllSpacers()
+        // todo 设置光标位置
+      })
+    }
+  }
 </script>
 
 <!--入口script-->
