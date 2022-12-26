@@ -75,6 +75,26 @@ class Editor{
 
 <!--数据层-->
 <script>
+  // 保存用户输入的数据
+  class TextModel{
+    // todo 为什么这里不将 _spacers 保存到this 中？
+    _spacers = ''
+    insert(index, spacers){
+      this._spacers = this._spacers.slice(0, index) + spacers + this._spacers.slice(index)
+    }
+    remove(startIndex, endIndex){
+      let end = endIndex + 1
+      if(end > this._spacers.length){
+        throw new Error("删除的终点大于删除总长度")
+      }
+      this._spacers = this._spacers.slice(0, startIndex) + this._spacers.slice(endIndex + 1)
+      // todo 这里要发送事件 text-change 给view 层，让view 层更新视图
+      // todo 为什么不直接在model 层，调用view 层的render 方法，也就是说，事件发布订阅与直接调用函数这两种通信方式，使用场景是什么？
+    }
+    getAllSpacers(){
+      return this._spacers
+    }
+  }
 </script>
 
 <!--视图层-->
