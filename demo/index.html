@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web-Editor-Markdown</title>
+</head>
+<style>
+    body {
+        padding: 0 50px;
+        /* background: #eee */
+        background: #fff
+    }
+    a{
+        color: #4285f4;
+        text-decoration: underline;
+    }
+    .hide {
+        display: none;
+    }
+
+    .my-editor {
+        /* border: 2px solid #ddd; */
+        width: 100%;
+        min-height: 800px;
+        display: flex;
+        margin: 20px auto;
+        justify-content: center;
+    }
+    button {
+        padding: 5px 10px
+    }
+    .toolbar {
+        display: flex;
+        justify-content:space-between;
+        margin-top: 25px;
+    }
+    .curr{
+        background: green;
+        color: #fff
+    }
+
+</style>
+<body class='light'>
+    <div class="toolbar">
+        <div>
+           <button class="mode-btn curr" onclick="changeMode(1)">RENDER MODE</button>&nbsp;&nbsp;&nbsp;
+           <button class="mode-btn" onclick="changeMode(2)">SOURCE_AND_PREVIEW MODE</button>&nbsp;&nbsp;&nbsp;
+           <button class="mode-btn" onclick="changeMode(3)">SOURCE MODE</button>&nbsp;&nbsp;&nbsp;
+           <button class="mode-btn" onclick="changeMode(4)">PREVIEW MODE</button>
+        </div>
+    </div>
+    <div id="myEditor" class="my-editor"></div>
+</body>
+</html>

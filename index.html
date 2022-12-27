@@ -48,6 +48,21 @@ event 层作用
       this.target.addEventListener('beforeinput', this._beforeInputHandler.bind(this)) // bind 的作用：将原本事件回调的this（触发元素）改成类的实例
     }
   }
+  class SelectionchangeEventHandler{
+    constructor(editor) {
+      this.init()
+      this.editor = editor
+    }
+    _selectionchangeHandler(e){
+      const {anchorOffset, focusOffset} = window.getSelection()
+      let op = new SetSelectionOperation(this.editor, anchorOffset, focusOffset)
+      op.apply(this.editor)
+      console.log("当前光标数据", window.getSelection());
+    }
+    init(){
+      document.addEventListener('selectionchange', this._selectionchangeHandler.bind(this))
+    }
+  }
 </script>
 
 <!--
@@ -62,6 +77,7 @@ class Editor{
   }
   init(){
     this.eventHandler = new KeyboardEventHandler(this.target, this)// todo 已解决 这里传this 的作用是什么？this代表 editor 实例，相当于让 Event 引用 editor
+    this.selectionchangeEventHandler = new SelectionchangeEventHandler(this)
     this.textModel = new TextModel(this.target.innerHTML, this)
     this.selectionModel = new SelectionModel(this)
     this.view = new SourceCodeView(this.textModel, this.selectionModel, this.target)
@@ -97,7 +113,7 @@ class Editor{
     insert(index, spacers){
       this._spacers = this._spacers.slice(0, index) + spacers + this._spacers.slice(index)
 
-      this.editor.sourceCodeView.render()
+      this.editor.view.render()
     }
     remove(startIndex, endIndex){
       let end = endIndex + 1
@@ -117,23 +133,24 @@ class Editor{
   class SelectionModel{
     constructor(editor) {
       this.editor = editor
-      this.startIndex = 0
-      this.endIndex = 0
+      this.anchorOffset = 0 // 点击鼠标的位置
+      this.focusOffset = 0  // 释放鼠标的位置
     }
 
     getSelection(){
       return {
-        startIndex: this.startIndex,
-        endIndex: this.endIndex
+        anchorOffset: this.anchorOffset,
+        focusOffset: this.focusOffset
       }
     }
 
-    setSelection(startIndex, endIndex){
-      this.startIndex = startIndex
-      this.endIndex = endIndex
+    setSelection(anchorOffset, focusOffset){
+      if(this.anchorOffset === anchorOffset && this.focusOffset === focusOffset){return}
+      this.anchorOffset = anchorOffset
+      this.focusOffset = focusOffset
       let nodeList = this.editor.target.childNodes
       let node = nodeList[nodeList.length - 1]
-      this.editor.sourceCodeView.renderSelection(node, startIndex, endIndex)
+      this.editor.view.renderSelection(node, anchorOffset, focusOffset)
     }
   }
 </script>
@@ -163,13 +180,14 @@ class InsertTextOperation extends Operation{
   }
 }
 class SetSelectionOperation extends Operation{
-  constructor(editor, selectionIndex) {
+  constructor(editor, anchorOffset, focusOffset) {
     super();
     this.editor = editor
-    this._selectionIndex = selectionIndex
+    this.anchorOffset = anchorOffset
+    this.focusOffset = focusOffset
   }
   apply(editor){
-    this.editor.selectionModel.setSelection(this._selectionIndex)
+    this.editor.selectionModel.setSelection(this.anchorOffset, this.focusOffset)
     super.apply()
   }
 }
@@ -193,12 +211,12 @@ class RemoveTextOperation extends Operation{
     render(){
       this.target.innerHTML = this.textModel.getAllSpacers()
     }
-    renderSelection(node, startOffset, endOffset){
+    renderSelection(node, anchorOffset, focusOffset){
       let range = document.createRange()
       let selection = window.getSelection()
-      startOffset !== undefined && range.setStart(node, startOffset)
-      endOffset !== undefined && range.setEnd(node, endOffset)
-      range.collapse(endOffset === undefined)
+      anchorOffset !== undefined && range.setStart(node, anchorOffset)
+      focusOffset !== undefined && range.setEnd(node, focusOffset)
+      range.collapse(focusOffset === undefined)
       selection.removeAllRanges()
       selection.addRange(range)
     }
