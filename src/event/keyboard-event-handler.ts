@@ -10,6 +10,7 @@ export class KeyboardEventHandler{
   }
 
   private _beforeInputHandler(e: InputEvent){
+    console.log(e);
     const inputType = e.inputType
     e.preventDefault()
     if(inputType === 'insertText'){
@@ -17,6 +18,8 @@ export class KeyboardEventHandler{
       if(text){
         this.editor.insertTextAtCursor(text)
       }
+    } else if (inputType === 'deleteContentBackward'){
+      this.editor.removeTextAtCursor()
     }
   }
 

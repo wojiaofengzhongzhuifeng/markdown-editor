@@ -15,6 +15,10 @@ export class TextModel{
     // todo 为什么不直接在model 层，调用view 层的render 方法，也就是说，事件发布订阅与直接调用函数这两种通信方式，使用场景是什么？
     this.editor.view.render()
   }
+  remove(index: number){
+    this._spacers = this._spacers.slice(0, index- 1) + this._spacers.slice(index)
+    this.editor.view.render()
+  }
   getAllSpacers(){
     return this._spacers
   }

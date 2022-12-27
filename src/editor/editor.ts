@@ -2,6 +2,7 @@ import {KeyboardEventHandler, SelectionchangeEventHandler} from "../event";
 import {SelectionModel, TextModel} from "../model";
 import SourceCodeView from "../view/source-code-view";
 import {InsertTextOperation, SetSelectionOperation} from "../operation";
+import RemoveTextOperation from "../operation/remove-text-operation";
 
 export class Editor{
   target: HTMLElement
@@ -36,7 +37,18 @@ export class Editor{
     insertOperation.apply();
 
     // 设置光标位置
+    // todo 设置光标位置应该放到TextModel.insert内？
     const setSelectionOperation = new SetSelectionOperation(this, currentSelection.anchorOffset+1)
+    setSelectionOperation.apply();
+  }
+  removeTextAtCursor(){
+    const currentSelection = this.selectionModel.getSelection()
+    const removeOperation = new RemoveTextOperation(this, currentSelection.anchorOffset)
+    removeOperation.apply()
+
+    // 设置光标位置
+    // todo 设置光标位置应该放到TextModel.insert内？
+    const setSelectionOperation = new SetSelectionOperation(this, currentSelection.anchorOffset-1)
     setSelectionOperation.apply();
   }
 }
