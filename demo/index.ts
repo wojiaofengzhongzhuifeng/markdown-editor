@@ -1,7 +1,12 @@
-// import { Editor} from "../src";
-import test from '../src'
+import { Editor} from "../src";
+
 const container = document.getElementById('myEditor');
-console.log(test);
+if(container){
+  let editor = new Editor(container)
+}
+
+
+console.log(container);
 // let editor: Editor;
 // if (container) {
 //   editor = new Editor(container);

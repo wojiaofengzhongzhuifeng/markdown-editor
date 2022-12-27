@@ -1,3 +1,2 @@
-// export * from './selection-model';
-// export * from './text-model';
-// //
+export * from './selection-model';
+export * from './text-model';
