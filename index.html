@@ -34,9 +34,6 @@ event 层作用
     }
 
     _beforeInputHandler(e){
-      // let nodeList = e.path[0].childNodes
-      // let lastNode = nodeList[nodeList.length - 1]
-      // console.log(lastNode);
       const inputType = e.inputType
       e.preventDefault()
       if(inputType === 'insertText'){
@@ -48,8 +45,7 @@ event 层作用
     }
 
     addEventListener(){
-      // 为什么绑定函数的时候，不直接使用匿名函数？因为后续可能有解绑操作，如果使用匿名函数无法解绑
-      this.target.addEventListener('beforeinput', this._beforeInputHandler.bind(this))
+      this.target.addEventListener('beforeinput', this._beforeInputHandler.bind(this)) // bind 的作用：将原本事件回调的this（触发元素）改成类的实例
     }
   }
 </script>
@@ -65,12 +61,10 @@ class Editor{
     this.init()
   }
   init(){
-    // todo 为什么这里传this ,能得到 edior 的实例?
-    // todo 为什么这里新建的方式是 new ？
-    this.eventHandler = new KeyboardEventHandler(this.target, this)
+    this.eventHandler = new KeyboardEventHandler(this.target, this)// todo 已解决 这里传this 的作用是什么？this代表 editor 实例，相当于让 Event 引用 editor
     this.textModel = new TextModel(this.target.innerHTML, this)
     this.selectionModel = new SelectionModel(this)
-    this.sourceCodeView = new SourceCodeView(this.textModel, this.selectionModel, this.target)
+    this.view = new SourceCodeView(this.textModel, this.selectionModel, this.target)
 
     this.eventHandler.addEventListener()
   }
@@ -82,21 +76,12 @@ class Editor{
     const currentSelection = this.selectionModel.getSelection()
 
     // 插入内容
-    const insertOperation = new InsertTextOperation(currentSelection.startIndex, text)
-    insertOperation.apply(this);
+    const insertOperation = new InsertTextOperation(this, currentSelection.startIndex, text)
+    insertOperation.apply();
 
     // 设置光标位置
     const setSelectionOperation = new SetSelectionOperation(this, currentSelection.startIndex+1)
     setSelectionOperation.apply();
-  }
-  getTextModel(){
-    return this.textModel
-  }
-  getSelectionModel(){
-    return this.selectionModel
-  }
-  getView(){
-    return this.sourceCodeView
   }
 }
 </script>
@@ -105,7 +90,6 @@ class Editor{
 <script>
   // 保存用户输入的数据
   class TextModel{
-    // todo 已解决: 为什么这里不将 _spacers 保存到this 中？
     constructor(initialSpacers, editor) {
       this.editor = editor
       this._spacers = initialSpacers
@@ -113,7 +97,6 @@ class Editor{
     insert(index, spacers){
       this._spacers = this._spacers.slice(0, index) + spacers + this._spacers.slice(index)
 
-      // todo 发送事件： text-change 给 view
       this.editor.sourceCodeView.render()
     }
     remove(startIndex, endIndex){
@@ -148,7 +131,6 @@ class Editor{
     setSelection(startIndex, endIndex){
       this.startIndex = startIndex
       this.endIndex = endIndex
-      // todo 更新光标位置
       let nodeList = this.editor.target.childNodes
       let node = nodeList[nodeList.length - 1]
       this.editor.sourceCodeView.renderSelection(node, startIndex, endIndex)
@@ -169,13 +151,14 @@ class Operation{
   }
 }
 class InsertTextOperation extends Operation{
-  constructor(index, spacers) {
+  constructor(editor, index, spacers) {
     super();
+    this.editor = editor
     this._spacers = spacers
     this._insertIndex = index
   }
   apply(editor){
-    editor.getTextModel().insert(this._insertIndex, this._spacers)
+    this.editor.textModel.insert(this._insertIndex, this._spacers)
     super.apply() // 调用 operation 的公共apply 方法
   }
 }
@@ -186,7 +169,7 @@ class SetSelectionOperation extends Operation{
     this._selectionIndex = selectionIndex
   }
   apply(editor){
-    this.editor.getSelectionModel().setSelection(this._selectionIndex)
+    this.editor.selectionModel.setSelection(this._selectionIndex)
     super.apply()
   }
 }
