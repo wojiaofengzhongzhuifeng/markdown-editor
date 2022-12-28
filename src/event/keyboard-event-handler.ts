@@ -10,7 +10,6 @@ export class KeyboardEventHandler{
   }
 
   private _beforeInputHandler(e: InputEvent){
-    console.log(e);
     const inputType = e.inputType
     e.preventDefault()
     if(inputType === 'insertText'){

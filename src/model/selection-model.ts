@@ -13,7 +13,8 @@ export class SelectionModel{
   getSelection(){
     return {
       anchorOffset: this.anchorOffset,
-      focusOffset: this.focusOffset
+      focusOffset: this.focusOffset,
+      isMultipleSelect: this.isMultipleSelect()
     }
   }
 
@@ -24,6 +25,11 @@ export class SelectionModel{
     let nodeList = this.editor.target.childNodes
     let node = nodeList[nodeList.length - 1]
     this.editor.view.renderSelection(node, anchorOffset, focusOffset)
+  }
+
+  // 判断是否多选
+  isMultipleSelect(){
+    return this.anchorOffset !== this.focusOffset;
   }
 }
 export default SelectionModel

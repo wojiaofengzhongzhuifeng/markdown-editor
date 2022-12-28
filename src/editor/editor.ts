@@ -34,20 +34,34 @@ export class Editor{
     // 4. 调用selection-model 选取模型更新光标位置
     const currentSelection = this.selectionModel.getSelection()
 
+    // 判断当前是否多选文本内容，如果是的话，需要先将多选的文本内容删除，然后执行插入操作
+    if(currentSelection.isMultipleSelect){
+      let [smallNumber, bigNumber] = [currentSelection.anchorOffset, currentSelection.focusOffset].sort()
+      let op = new RemoveTextOperation({
+        removeStartIndex: smallNumber + 1,
+        removeEndIndex: bigNumber
+      })
+      this.apply(op)
+    }
+
     // 插入内容
-    this.apply(new InsertTextOperation(currentSelection.anchorOffset+1, text))
+    let op = new InsertTextOperation(currentSelection.anchorOffset+1, text)
+    this.apply(op)
 
     // 设置光标位置
-    this.apply(new SetSelectionOperation(currentSelection.anchorOffset+1))
+    let setSelectionOp = new SetSelectionOperation(currentSelection.anchorOffset+1)
+    this.apply(setSelectionOp)
   }
   removeTextAtCursor(){
     const currentSelection = this.selectionModel.getSelection()
 
     // 执行删除操作
-    this.apply(new RemoveTextOperation(currentSelection.anchorOffset))
+    let removeOp = new RemoveTextOperation({removeStartIndex: currentSelection.anchorOffset})
+    this.apply(removeOp)
 
     // 设置光标位置
-    this.apply(new SetSelectionOperation(currentSelection.anchorOffset-1))
+    let setSelectionOp = new SetSelectionOperation(currentSelection.anchorOffset-1)
+    this.apply(setSelectionOp)
 
   }
 

@@ -39,7 +39,7 @@ export function withUndo(editor: Editor): WithUndoEditor{
     if(operation instanceof InsertTextOperation){
       newOp = new RemoveTextOperation(operation.insertIndex, operation.spacers)
     } else if (operation instanceof RemoveTextOperation){
-      newOp = new InsertTextOperation(operation.removeIndex, operation.removeSpacers)
+      newOp = new InsertTextOperation(operation.removeStartIndex, operation.removeSpacers)
     } else {
       throw new Error("op错误")
     }
