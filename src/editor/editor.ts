@@ -51,6 +51,11 @@ export class Editor{
     const setSelectionOperation = new SetSelectionOperation(this, currentSelection.anchorOffset-1)
     setSelectionOperation.apply();
   }
+
+  // todo 为什么要有这个方法？不直接 this.editor.textModel?
+  getTextModel(){
+    return this.textModel
+  }
 }
 export default Editor
 
