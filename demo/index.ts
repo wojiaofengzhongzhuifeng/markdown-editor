@@ -1,8 +1,12 @@
 import { Editor} from "../src";
 
 const container = document.getElementById('myEditor');
+const undo = document.getElementById('undo')
 if(container){
   let editor = new Editor(container)
+  undo!.addEventListener('click', ()=>{
+    editor.undo()
+  })
 }
 
 

@@ -3,14 +3,18 @@ import {Editor} from "../editor";
 
 export class RemoveTextOperation extends Operation{
   removeIndex: number
+  removeSpacers: string
 
-  // todo 能否通过一定的方法，去除 editor 传入参数？
-  constructor(removeIndex: number) {
+  constructor(removeIndex: number, removeSpacers?: string) {
     super();
     this.removeIndex = removeIndex
+    if(removeSpacers !== undefined){
+      this.removeSpacers = removeSpacers
+    }
   }
   apply(editor: Editor){
-    editor.textModel.remove(this.removeIndex)
+    let removeSpacers = editor.textModel.remove(this.removeIndex)
+    this.removeSpacers = removeSpacers
     super.apply(editor)
   }
 }

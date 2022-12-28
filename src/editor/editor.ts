@@ -3,6 +3,7 @@ import {SelectionModel, TextModel} from "../model";
 import SourceCodeView from "../view/source-code-view";
 import {InsertTextOperation, SetSelectionOperation} from "../operation";
 import RemoveTextOperation from "../operation/remove-text-operation";
+import Operation from "../operation/operation";
 
 export class Editor{
   target: HTMLElement
@@ -11,6 +12,8 @@ export class Editor{
   textModel: TextModel
   selectionModel: SelectionModel
   view: SourceCodeView
+  userOpList: Operation[] = [] // 用户操作历史记录
+  actualOpList: Operation[] = [] // 实际历史记录
 
   constructor(target: HTMLElement) {
     this.target = target
@@ -33,7 +36,7 @@ export class Editor{
     const currentSelection = this.selectionModel.getSelection()
 
     // 插入内容
-    this.apply(new InsertTextOperation(currentSelection.anchorOffset, text))
+    this.apply(new InsertTextOperation(currentSelection.anchorOffset+1, text))
 
     // 设置光标位置
     this.apply(new SetSelectionOperation(currentSelection.anchorOffset+1))
@@ -53,13 +56,32 @@ export class Editor{
   getTextModel(){
     return this.textModel
   }
-  apply(op: Operation){
+  apply(op: Operation, isUndo = false){
     op.apply(this)
     if(op instanceof InsertTextOperation || op instanceof RemoveTextOperation){
-      this.userOpList.push(op)
+      !isUndo && this.userOpList.push(op) // 如果是回退操作，不会被记录到用户实际操作中
       this.actualOpList.push(op)
     }
   }
+  undo(){
+    const latestOp = this.userOpList.pop()
+    if(latestOp){
+      const newOp = this.getInverseOp(latestOp)
+      this.apply(newOp, true)
+    }
+  }
+  getInverseOp(operation: Operation): Operation{
+    let newOp
+    if(operation instanceof InsertTextOperation){
+      newOp = new RemoveTextOperation(operation.insertIndex, operation.spacers)
+    } else if (operation instanceof RemoveTextOperation){
+      newOp = new InsertTextOperation(operation.removeIndex, operation.removeSpacers)
+    } else {
+      throw new Error("op错误")
+    }
+    return newOp
+  }
+
 }
 export default Editor
 
