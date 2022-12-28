@@ -12,7 +12,6 @@ if(container){
 }
 
 
-console.log(container);
 // let editor: Editor;
 // if (container) {
 //   editor = new Editor(container);

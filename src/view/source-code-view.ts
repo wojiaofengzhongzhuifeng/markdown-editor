@@ -19,7 +19,6 @@ export class SourceCodeView{
     if(selection && node){
       anchorOffset !== undefined && range.setStart(node, anchorOffset)
       focusOffset !== undefined && range.setEnd(node, focusOffset)
-      range.collapse(focusOffset === undefined)
       selection.removeAllRanges()
       selection.addRange(range)
     }

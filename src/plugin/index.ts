@@ -19,7 +19,6 @@ export function withUndo(editor: Editor): WithUndoEditor{
 
   // 重写 editor.apply 函数，并且追加一些代码
   editor.apply = (op:Operation, isUndo?: boolean)=>{
-    console.log(123);
     apply(op)
     if(op instanceof InsertTextOperation || op instanceof RemoveTextOperation){
       !isUndo && userOpList.push(op) // 如果是回退操作，不会被记录到用户实际操作中

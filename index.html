@@ -57,7 +57,6 @@ event 层作用
       const {anchorOffset, focusOffset} = window.getSelection()
       let op = new SetSelectionOperation(this.editor, anchorOffset, focusOffset)
       op.apply(this.editor)
-      console.log("当前光标数据", window.getSelection());
     }
     init(){
       document.addEventListener('selectionchange', this._selectionchangeHandler.bind(this))
