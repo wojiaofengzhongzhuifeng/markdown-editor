@@ -12,8 +12,7 @@ export class Editor{
   textModel: TextModel
   selectionModel: SelectionModel
   view: SourceCodeView
-  userOpList: Operation[] = [] // 用户操作历史记录
-  actualOpList: Operation[] = [] // 实际历史记录
+
 
   constructor(target: HTMLElement) {
     this.target = target
@@ -56,32 +55,9 @@ export class Editor{
   getTextModel(){
     return this.textModel
   }
-  apply(op: Operation, isUndo = false){
+  apply(op: Operation){
     op.apply(this)
-    if(op instanceof InsertTextOperation || op instanceof RemoveTextOperation){
-      !isUndo && this.userOpList.push(op) // 如果是回退操作，不会被记录到用户实际操作中
-      this.actualOpList.push(op)
-    }
   }
-  undo(){
-    const latestOp = this.userOpList.pop()
-    if(latestOp){
-      const newOp = this.getInverseOp(latestOp)
-      this.apply(newOp, true)
-    }
-  }
-  getInverseOp(operation: Operation): Operation{
-    let newOp
-    if(operation instanceof InsertTextOperation){
-      newOp = new RemoveTextOperation(operation.insertIndex, operation.spacers)
-    } else if (operation instanceof RemoveTextOperation){
-      newOp = new InsertTextOperation(operation.removeIndex, operation.removeSpacers)
-    } else {
-      throw new Error("op错误")
-    }
-    return newOp
-  }
-
 }
 export default Editor
 
