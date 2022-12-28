@@ -16,7 +16,7 @@ export class SourceCodeView{
   renderSelection(node: Node, anchorOffset: number, focusOffset?: number){
     let range = document.createRange()
     let selection = window.getSelection()
-    if(selection){
+    if(selection && node){
       anchorOffset !== undefined && range.setStart(node, anchorOffset)
       focusOffset !== undefined && range.setEnd(node, focusOffset)
       range.collapse(focusOffset === undefined)
