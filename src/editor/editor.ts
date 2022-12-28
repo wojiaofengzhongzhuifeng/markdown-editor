@@ -33,28 +33,32 @@ export class Editor{
     const currentSelection = this.selectionModel.getSelection()
 
     // 插入内容
-    const insertOperation = new InsertTextOperation(this, currentSelection.anchorOffset, text)
-    insertOperation.apply();
+    this.apply(new InsertTextOperation(currentSelection.anchorOffset, text))
 
     // 设置光标位置
-    // todo 设置光标位置应该放到TextModel.insert内？
-    const setSelectionOperation = new SetSelectionOperation(this, currentSelection.anchorOffset+1)
-    setSelectionOperation.apply();
+    this.apply(new SetSelectionOperation(currentSelection.anchorOffset+1))
   }
   removeTextAtCursor(){
     const currentSelection = this.selectionModel.getSelection()
-    const removeOperation = new RemoveTextOperation(this, currentSelection.anchorOffset)
-    removeOperation.apply()
+
+    // 执行删除操作
+    this.apply(new RemoveTextOperation(currentSelection.anchorOffset))
 
     // 设置光标位置
-    // todo 设置光标位置应该放到TextModel.insert内？
-    const setSelectionOperation = new SetSelectionOperation(this, currentSelection.anchorOffset-1)
-    setSelectionOperation.apply();
+    this.apply(new SetSelectionOperation(currentSelection.anchorOffset-1))
+
   }
 
   // todo 为什么要有这个方法？不直接 this.editor.textModel?
   getTextModel(){
     return this.textModel
+  }
+  apply(op: Operation){
+    op.apply(this)
+    if(op instanceof InsertTextOperation || op instanceof RemoveTextOperation){
+      this.userOpList.push(op)
+      this.actualOpList.push(op)
+    }
   }
 }
 export default Editor

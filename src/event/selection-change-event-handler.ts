@@ -14,8 +14,8 @@ export class SelectionchangeEventHandler{
     if(selection){
       const {anchorOffset, focusOffset} = window.getSelection() as Selection
       console.log(anchorOffset, focusOffset);
-      let op = new SetSelectionOperation(this.editor, anchorOffset, focusOffset)
-      op.apply()
+      let op = new SetSelectionOperation(anchorOffset, focusOffset)
+      op.apply(this.editor)
     }
 
   }

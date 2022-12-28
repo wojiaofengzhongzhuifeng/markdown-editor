@@ -1,5 +1,7 @@
+import {Editor} from "../editor";
+
 export default class Operation{
-  apply(){
+  apply(editor: Editor){
     // todo 可以接入后端
   }
 }
