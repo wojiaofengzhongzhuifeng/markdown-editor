@@ -9,18 +9,22 @@ export class KeyboardEventHandler{
     this.editor = editor
   }
 
-  private _beforeInputHandler(e: InputEvent){
+  private async _beforeInputHandler(e: InputEvent) {
     const inputType = e.inputType
+    console.log(inputType);
     e.preventDefault()
-    if(inputType === 'insertText'){
+    if (inputType === 'insertText') {
       const text = e.data
-      if(text){
+      if (text) {
         this.editor.insertTextAtCursor(text)
       }
-    } else if (inputType === 'deleteContentBackward'){
+    } else if (inputType === 'deleteContentBackward') {
       this.editor.removeTextAtCursor()
-    } else if (inputType === 'insertParagraph'){
+    } else if (inputType === 'insertParagraph') {
       this.editor.insertTextAtCursor("\n")
+    } else if (inputType === 'insertFromPaste') {
+      const textFromClipboard = await navigator.clipboard.readText();
+      this.editor.insertTextAtCursor(textFromClipboard)
     }
   }
 
