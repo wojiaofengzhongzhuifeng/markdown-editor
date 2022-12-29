@@ -4,6 +4,7 @@ import SourceCodeView from "../view/source-code-view";
 import {InsertTextOperation, SetSelectionOperation} from "../operation";
 import RemoveTextOperation from "../operation/remove-text-operation";
 import Operation from "../operation/operation";
+import SourceCodeAndPreview from "../view/source-code-and-preview";
 
 export class Editor{
   target: HTMLElement
@@ -26,6 +27,7 @@ export class Editor{
     this.view = new SourceCodeView(this)
 
     this.setAttributeToTarget()
+    this.addAddtionalClassName()
     this.addAddtionalEmptyTextToTarget() // 在编辑器末尾新增空格，用于没有内容和换行的时候，有光标
 
     this.eventHandler.addEventListener()
@@ -95,12 +97,24 @@ export class Editor{
   setAttributeToTarget(){
     this.target.style['white-space'] = 'pre-wrap'
     this.target.style['padding'] = '10px 20px'
+    this.target.setAttribute("contenteditable", 'true')
   }
   addAddtionalEmptyTextToTarget(){
     let style = document.createElement('style');
     style.innerText = `#${this.target.id}::after { content: ' '; }`;
     document.body.appendChild(style)
   }
+  addAddtionalClassName(){
+    let style = document.createElement('style');
+    style.innerText = `
+    .rjj-source-code-and-preview{display:flex}
+    .rjj-source-code-and-preview-previewer{flex: 1}
+    .rjj-source-code-and-preview-coder{flex: 1}
+    `
+    document.body.appendChild(style)
+  }
+
+
 }
 export default Editor
 

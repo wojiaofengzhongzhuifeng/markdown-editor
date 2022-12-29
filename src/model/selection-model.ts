@@ -1,4 +1,5 @@
 import {Editor} from "../editor";
+import SourceCodeAndPreview from "../view/source-code-and-preview";
 
 export class SelectionModel{
   editor: Editor
@@ -22,8 +23,16 @@ export class SelectionModel{
     if(this.anchorOffset === anchorOffset && this.focusOffset === focusOffset){return}
     this.anchorOffset = anchorOffset
     this.focusOffset = focusOffset === undefined ?  anchorOffset : focusOffset
-    let nodeList = this.editor.target.childNodes
-    let node = nodeList[nodeList.length - 1]
+
+    let node
+    if(this.editor.view instanceof SourceCodeAndPreview){
+      let nodeList = this.editor.target.childNodes
+      node = nodeList[0].childNodes[0]
+    } else {
+      let nodeList = this.editor.target.childNodes
+      node = nodeList[nodeList.length - 1]
+    }
+
     this.editor.view.renderSelection(node, anchorOffset, focusOffset)
   }
 
