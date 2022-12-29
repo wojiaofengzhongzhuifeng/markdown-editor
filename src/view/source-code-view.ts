@@ -11,7 +11,7 @@ export class SourceCodeView{
     this.target = editor.target
   }
   render(){
-    this.target.innerHTML = this.textModel.getAllSpacers()
+    this.target.innerHTML = this.textModel.getAllSpacers() + '\n'
   }
   renderSelection(node: Node, anchorOffset: number, focusOffset?: number){
     let range = document.createRange()
