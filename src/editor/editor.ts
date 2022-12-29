@@ -26,6 +26,7 @@ export class Editor{
     this.view = new SourceCodeView(this)
 
     this.setAttributeToTarget()
+    this.addAddtionalEmptyTextToTarget() // 在编辑器末尾新增空格，用于没有内容和换行的时候，有光标
 
     this.eventHandler.addEventListener()
   }
@@ -75,7 +76,13 @@ export class Editor{
     op.apply(this)
   }
   setAttributeToTarget(){
-    this.target.style['white-space'] = 'pre-line'
+    this.target.style['white-space'] = 'pre-wrap'
+    this.target.style['padding'] = '5px'
+  }
+  addAddtionalEmptyTextToTarget(){
+    let style = document.createElement('style');
+    style.innerText = `#${this.target.id}::after { content: ' '; }`;
+    document.body.appendChild(style)
   }
 }
 export default Editor
