@@ -77,7 +77,7 @@ export class Editor{
   }
   setAttributeToTarget(){
     this.target.style['white-space'] = 'pre-wrap'
-    this.target.style['padding'] = '5px'
+    this.target.style['padding'] = '10px 20px'
   }
   addAddtionalEmptyTextToTarget(){
     let style = document.createElement('style');
