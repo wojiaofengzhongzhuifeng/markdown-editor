@@ -58,13 +58,28 @@ export class Editor{
   removeTextAtCursor(){
     const currentSelection = this.selectionModel.getSelection()
 
-    // 执行删除操作
-    let removeOp = new RemoveTextOperation({removeStartIndex: currentSelection.anchorOffset})
-    this.apply(removeOp)
+    if(currentSelection.isMultipleSelect){
+      // 执行删除操作
+      let removeOp = new RemoveTextOperation({
+        removeStartIndex: currentSelection.anchorOffset+1,
+        removeEndIndex: currentSelection.focusOffset
+      })
+      this.apply(removeOp)
 
-    // 设置光标位置
-    let setSelectionOp = new SetSelectionOperation(currentSelection.anchorOffset-1)
-    this.apply(setSelectionOp)
+      // 设置光标位置
+      let setSelectionOp = new SetSelectionOperation(currentSelection.anchorOffset)
+      this.apply(setSelectionOp)
+    } else {
+      // 执行删除操作
+      let removeOp = new RemoveTextOperation({removeStartIndex: currentSelection.anchorOffset})
+      this.apply(removeOp)
+
+      // 设置光标位置
+      let setSelectionOp = new SetSelectionOperation(currentSelection.anchorOffset-1)
+      this.apply(setSelectionOp)
+    }
+
+
 
   }
 
