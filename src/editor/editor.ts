@@ -52,8 +52,9 @@ export class Editor{
     this.apply(op)
 
     // 设置光标位置
-
-    let setSelectionOp = new SetSelectionOperation(this.textModel._spacers.length+1)
+    let insertIndex = this.selectionModel.isSelectionAtLast()
+      ? this.textModel._spacers.length+1 : currentSelection.anchorOffset + 1
+      let setSelectionOp = new SetSelectionOperation(insertIndex)
     this.apply(setSelectionOp)
   }
   removeTextAtCursor(){

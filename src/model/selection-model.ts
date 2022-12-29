@@ -31,5 +31,10 @@ export class SelectionModel{
   isMultipleSelect(){
     return this.anchorOffset !== this.focusOffset;
   }
+
+  // 光标处于编辑内容末尾
+  isSelectionAtLast(){
+    return this.editor.getTextModel()._spacers.length === this.focusOffset;
+  }
 }
 export default SelectionModel
