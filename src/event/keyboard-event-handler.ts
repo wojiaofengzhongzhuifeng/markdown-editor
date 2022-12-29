@@ -19,6 +19,8 @@ export class KeyboardEventHandler{
       }
     } else if (inputType === 'deleteContentBackward'){
       this.editor.removeTextAtCursor()
+    } else if (inputType === 'insertParagraph'){
+      this.editor.insertTextAtCursor("\n")
     }
   }
 

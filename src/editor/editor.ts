@@ -25,6 +25,8 @@ export class Editor{
     this.selectionModel = new SelectionModel(this)
     this.view = new SourceCodeView(this)
 
+    this.setAttributeToTarget()
+
     this.eventHandler.addEventListener()
   }
   insertTextAtCursor(text: string){
@@ -71,6 +73,9 @@ export class Editor{
   }
   apply(op: Operation){
     op.apply(this)
+  }
+  setAttributeToTarget(){
+    this.target.style['white-space'] = 'pre-line'
   }
 }
 export default Editor
