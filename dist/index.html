@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web-Editor-Markdown</title>
+    <style>
+        #ct{
+            display: flex;
+            justify-content: center;
+            padding: 50px;
+        }
+        .editor{
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+            box-sizing: border-box;
+            min-height: 800px;
+            line-height: 2;
+            font-size: 16px;
+            color: #333333;
+            font-family: Arial, 'Microsoft YaHei', '微软雅黑', '黑体', Heiti, sans-serif, SimSun, '宋体', serif;
+            overflow: scroll;
+            width: 50%;
+            height: 100%;
+            /* height: 600px; */
+            outline: 0 none;
+            background-color: #fff;
+            padding: 10px 20px;
+            box-shadow: 0px 0px 8px 3px #ccc;
+        }
+    </style>
+<script defer src="index.js"></script></head>
+<div id="ct">
+    <div id="myEditor" class="editor"></div>
+</div>
+<button id="undo">undo</button>
+</html>
