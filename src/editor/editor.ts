@@ -24,7 +24,7 @@ export class Editor{
     this.selectionchangeEventHandler = new SelectionchangeEventHandler(this)
     this.textModel = new TextModel(this)
     this.selectionModel = new SelectionModel(this)
-    this.view = new SourceCodeView(this)
+    this.view = new SourceCodeAndPreview(this)
 
     this.setAttributeToTarget()
     this.addAddtionalClassName()
