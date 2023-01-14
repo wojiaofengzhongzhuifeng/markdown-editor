@@ -1,6 +1,14 @@
 
 // 输入： 123***456**789~123~456
 // 输出： 123*<strong>456</strong>789<del>123</del>
+import TextNode from "./TextNode";
+import {getMatchChar, isSpecialChar} from "../utils";
+import SpecialTextNode from "./SpecialTextNode";
+import {StrongNode} from "./StrongNode";
+import {DelNode} from "./DelNode";
+import {ItalicsNode} from "./ItalicsNode";
+import {ImgNode} from "./ImgNode";
+
 function parseStrong(result: string[], ){
   // result = ['123', '*', '*', '456', '*', '*', '789']
   // 扩散字符串, 生成变更对象
@@ -155,3 +163,173 @@ export function stringToPreview(test: string){
   parseStrong(result)
   return result.join('')
 }
+
+export function parse(string: string){
+  let spcecialCharArray = [0]
+  for(let i=0;i<=string.length - 1;i++){
+    let char = string[i]
+    if(char.includes("*")){
+      let count = 1
+      let index = i
+      while(char.includes(string[index + count])){
+        count += 1
+      }
+      i += count
+      spcecialCharArray.push(...[index, count + index])
+    }
+
+    if(char.includes("~")){
+      let count = 1
+      let index = i
+      while(char.includes(string[index + count])){
+        count += 1
+      }
+      i += count
+
+      spcecialCharArray.push(...[index, count + index])
+    }
+
+    if(char.includes('!')){
+      let nextChar = string[i + 1]
+      if(nextChar && nextChar === '['){
+        spcecialCharArray.push(...[i,i+2])
+      }
+    }
+    if(char.includes(']')){
+      spcecialCharArray.push(...[i,i+1])
+    }
+
+    if(char.includes('(')){
+      let count = 1
+      let index = i
+      while(!(')'.includes(string[index + count])) || index + count <char.length){
+        count += 1
+      }
+      i += count
+      console.log(index);
+      console.log(count + index + 1);
+      spcecialCharArray.push(count + index+1)
+    }
+
+  }
+  let lastCharIndex = spcecialCharArray[spcecialCharArray.length - 1]
+  if(lastCharIndex !== string.length){
+    spcecialCharArray.push(string.length)
+  }
+  // if(spcecialCharArray[spcecialCharArray.length - 1] ){}
+  console.log(spcecialCharArray);
+
+  let currentNode = null
+  let charLinkedList = null
+  for(let i=0;i<=spcecialCharArray.length - 1;i++){
+    let slowP = i
+    let fastP = i+1
+    let startIndex = spcecialCharArray[slowP]
+    let endIndex = spcecialCharArray[fastP]
+    if(startIndex !== undefined && endIndex !== undefined){
+      let result = string.slice(startIndex, endIndex)
+      let textNode = new TextNode({value: result})
+      if(currentNode){
+        currentNode.next = textNode
+      }
+      currentNode = textNode
+      if(i === 0){
+        charLinkedList = textNode
+      }
+    }
+  }
+  console.log(charLinkedList);
+  // 遍历链表
+  let specialCharLinkedList
+  let currentNode1 = null
+  let p = charLinkedList
+  while(p){
+    if(isSpecialChar(p.value)){
+      let sp = new SpecialTextNode({relatedNode: p, value: p.value})
+      if(currentNode1){
+        currentNode1.next = sp
+      }
+      if(!specialCharLinkedList){
+        specialCharLinkedList = currentNode1
+      }
+      currentNode1 = sp
+
+    }
+    // @ts-ignore
+    p = p.next
+
+  }
+  console.log(specialCharLinkedList);
+
+
+  // 快慢双指针遍历第二条链表，检查配对情况
+  let slow: SpecialTextNode | null | undefined = specialCharLinkedList
+  while(slow){
+    let fast: SpecialTextNode | null | undefined = slow.next
+    if(fast && slow){
+      let [matchChar1, matchChar2] = getMatchChar(slow.value, fast.value)
+      if(matchChar2){
+        // 处理图片和超链接
+        // 1. 修改第一、二条链表
+        slow.value = slow.value.replace(matchChar1, "")
+        fast.value = fast.value.replace(matchChar2, "")
+
+        slow.relatedNode.value = slow.relatedNode.value!.replace(matchChar1, "")
+        fast.relatedNode.value = fast.relatedNode.value!.replace(matchChar2, "")
+
+        let specialNode = createNodeBySpeicalChar(slow, matchChar1)
+        let tempNext = slow.relatedNode.next!.next!.next!.next
+
+        slow.relatedNode.next = specialNode
+        specialNode!.next = tempNext
+
+
+
+      } else {
+        // 处理加粗、斜体、删除线
+        if(matchChar1){
+          // 1. 修改第一、二条链表
+          slow.value = slow.value.replace(matchChar1, "")
+          fast.value = fast.value.replace(matchChar1, "")
+
+          slow.relatedNode.value = slow.relatedNode.value!.replace(matchChar1, "")
+          fast.relatedNode.value = fast.relatedNode.value!.replace(matchChar1, "")
+
+          let specialNode = createNodeBySpeicalChar(slow, matchChar1)
+          let tempNext = slow.relatedNode.next!.next!.next
+
+          slow.relatedNode.next = specialNode
+          specialNode!.next = tempNext
+
+        }
+
+      }
+    }
+    // @ts-ignore
+    slow = slow.next
+
+  }
+
+  console.log(charLinkedList);
+
+}
+
+export function createNodeBySpeicalChar(specialNode: SpecialTextNode, char: string){
+  if(char === '**'){
+    return new StrongNode({firstChild: specialNode.relatedNode.next})
+  } else if(char === '~'){
+    return new DelNode({firstChild: specialNode.relatedNode.next})
+  } else if(char === '*'){
+    return new ItalicsNode({firstChild: specialNode.relatedNode.next})
+  } else if (char === '!['){
+    // @ts-ignore
+    return new ImgNode({firstChild: specialNode.relatedNode.next, alt: specialNode.relatedNode.next!.value, imgUrl: specialNode.relatedNode.next.next.next!.value})
+
+  }
+  else {
+    throw new Error("未知分隔符")
+  }
+}
+
+
+
