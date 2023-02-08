@@ -15,7 +15,8 @@ if(container){
 // parse('1![t](https://www.baidu.com)4***7**a~b~c*d*')
 // parse('1![t](https://www.baidu.com)4')
 // parse('4**7**1')
-parse('1***~2~**3*4*5![t](test)6')
+// parse('1***~2~**3*4*5![t](test)6')
+parse('1***~2~**3')
 
 // let editor: Editor;
 // if (container) {

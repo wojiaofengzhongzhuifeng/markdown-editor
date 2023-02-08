@@ -167,7 +167,7 @@ export function stringToPreview(test: string){
 export function parse(string: string){
   console.log('输入字符串', string);
   // string:1![t](https://www.baidu.com)4**7**a~b~c*d*
-  // 分割字符串，将分割结果保存到链表1中
+  // 第一步：分割普通字符串和特殊字符串
   let spcecialCharArray = [0]
   for(let i=0;i<=string.length - 1;i++){
     let char = string[i]
@@ -238,7 +238,7 @@ export function parse(string: string){
   }
   console.log('字符串链表1', charLinkedList);
 
-  // 遍历链表1，生成特殊字符串链表2
+  // 第二步：遍历链表1，生成特殊字符串链表2
   let specialCharLinkedList
   let currentNode1 = null
   let p = charLinkedList
@@ -260,7 +260,7 @@ export function parse(string: string){
   console.log('特殊字符串链表2', specialCharLinkedList);
 
 
-  // 快慢双指针遍历链表2，修改链表1和链表2
+  // 第三步：特殊快慢双指针遍历链表2，找到匹配字符串，修改链表1 和链表2，删除空节点，插入新节点
   let slow: SpecialTextNode | null | undefined = specialCharLinkedList
   while(slow){
     let fast: SpecialTextNode | null | undefined = slow.next
