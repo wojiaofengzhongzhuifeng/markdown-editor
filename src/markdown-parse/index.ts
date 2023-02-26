@@ -166,166 +166,173 @@ export function stringToPreview(test: string){
 
 export function parse(string: string){
   console.log('输入字符串', string);
-  // string:1![t](https://www.baidu.com)4**7**a~b~c*d*
-  // 第一步：分割普通字符串和特殊字符串
-  let spcecialCharArray = [0]
-  for(let i=0;i<=string.length - 1;i++){
-    let char = string[i]
-    if(char.includes("*")){
-      let count = 1
-      let index = i
-      while(char.includes(string[index + count])){
-        count += 1
-      }
-      i += count
-      spcecialCharArray.push(...[index, count + index])
-    }
 
-    if(char.includes("~")){
-      let count = 1
-      let index = i
-      while(char.includes(string[index + count])){
-        count += 1
-      }
-      i += count
+  // 对用户输入字符串进行分割，生成特殊字符串的index位置，方便生成链表
+  const { spcecialCharArray } = createSpcecialCharArray(string)
 
-      spcecialCharArray.push(...[index, count + index])
-    }
+  // 根据特殊字符串的 index位置， 生成两个链表
+  const {allCharLinkedListList, specialCharLinkedListList} = createTwoLinkedList(spcecialCharArray)
 
-    if(char.includes('!')){
-      let nextChar = string[i + 1]
-      if(nextChar && nextChar === '['){
-        spcecialCharArray.push(...[i,i+2])
-      }
-    }
-    if(char.includes(']')){
-      spcecialCharArray.push(...[i,i+1])
-    }
 
-    if(char.includes('(')){
-      let count = 1
-      let index = i
-      while(!(')'.includes(string[index + count])) || index + count <char.length){
-        count += 1
-      }
-      i += count
-      spcecialCharArray.push(count + index+1)
-    }
+  /*
+  //
+   - 双指针遍历第二个链表，找到能匹配的特殊字符串，如果能匹配到，做以下事情
+   - 找到链表1对应的两个node节点 node1, node2
+   - 找到 node1, node2 前一个节点（双指针）
+   - 创建新节点 newNode ，让 newNode.children = node1.next
+   - 删除 node1, node2 节点匹配的字符串
+    - 如果删除完后，node1字符串 === "" && node2字符串 === "", 那么node1.前一个节点.next = newNode && newNode.next = node2.next && node2.前一个节点 = null
+    - 如果删除完后，node1字符串 !== "" && node2字符串 === "", 那么node1.next = newNode && newNode.next = node2.next && node2.前一个节点 = null
+    - 如果删除完后，node1字符串 === "" && node2字符串 !== "", 那么node1.前一个节点.next = newNode && newNode.next = node2 && node2.前一个节点 = null
+   */
 
-  }
-  let lastCharIndex = spcecialCharArray[spcecialCharArray.length - 1]
-  if(lastCharIndex !== string.length){
-    spcecialCharArray.push(string.length)
-  }
-  let currentNode = null
-  let charLinkedList = null
-  for(let i=0;i<=spcecialCharArray.length - 1;i++){
-    let slowP = i
-    let fastP = i+1
-    let startIndex = spcecialCharArray[slowP]
-    let endIndex = spcecialCharArray[fastP]
-    if(startIndex !== undefined && endIndex !== undefined){
-      let result = string.slice(startIndex, endIndex)
-      let textNode = new TextNode({value: result})
-      if(currentNode){
-        currentNode.next = textNode
+
+
+
+  let slowPoint = specialCharLinkedListList
+  if(slowPoint){
+    // while(slowPoint){
+    //   let slowPointChar = slowPoint.value
+    //   let fastPointChar = fastPoint.value
+    //   if(slowPointChar.includes(fastPointChar) ||fastPointChar.includes(slowPointChar)){
+    //     let matchChar = slowPointChar.length >= fastPointChar.length ? fastPointChar : slowPointChar
+    //     console.log(matchChar);
+    //   } else {
+    //     fastPoint = fastPoint.next
+    //   }
+    //   slowPoint = slowPoint.next
+    // }
+    console.log(specialCharLinkedListList!.getString());
+    while(slowPoint){
+      let fastPoint = slowPoint.next
+      while(fastPoint){
+        let slowPointChar = slowPoint.value
+        let fastPointChar = fastPoint.value
+        if(slowPointChar.includes(fastPointChar) ||fastPointChar.includes(slowPointChar)){
+          let matchChar = slowPointChar.length >= fastPointChar.length ? fastPointChar : slowPointChar
+          console.log(matchChar);
+          break;
+        }
+        fastPoint = fastPoint.next
       }
-      currentNode = textNode
-      if(i === 0){
-        charLinkedList = textNode
-      }
+      slowPoint = slowPoint.next
     }
   }
-  console.log('字符串链表1', charLinkedList);
 
-  // 第二步：遍历链表1，生成特殊字符串链表2
-  let specialCharLinkedList
-  let currentNode1 = null
-  let p = charLinkedList
-  while(p){
-    if(isSpecialChar(p.value)){
-      let sp = new SpecialTextNode({relatedNode: p, value: p.value})
-      if(currentNode1){
-        currentNode1.next = sp
-      }
-      if(!specialCharLinkedList){
-        specialCharLinkedList = currentNode1
-      }
-      currentNode1 = sp
+
+
+
+  // 帮助函数
+  function addSpecialCharIndex(spcecialCharArray: number[][], index:number, count:number){
+    if(spcecialCharArray[spcecialCharArray.length - 1] && spcecialCharArray[spcecialCharArray.length - 1][1] > index){
+
+    } else {
+      spcecialCharArray.push([index, count + index])
     }
-    // @ts-ignore
-    p = p.next
-
   }
-  console.log('特殊字符串链表2', specialCharLinkedList);
 
+  function createSpcecialCharArray(string:string){
+    let spcecialCharArray: number[][] = []
+    for(let i=0;i<=string.length - 1;i++){
+      let char = string[i]
+      if(char.includes("*")){
+        let count = 1
+        let index = i
+        while(char === string[index + count]){
+          count += 1
+        }
+        addSpecialCharIndex(spcecialCharArray, index, count)
+      }
 
-  // 第三步：特殊快慢双指针遍历链表2，找到匹配字符串，修改链表1 和链表2，删除空节点，插入新节点
-  let slow: SpecialTextNode | null | undefined = specialCharLinkedList
-  while(slow){
-    let fast: SpecialTextNode | null | undefined = slow.next
-    if(fast && slow){
-      let [matchChar1, matchChar2] = getMatchChar(slow.value, fast.value)
-      if(matchChar2){
-        // 处理图片和超链接
-        // 1. 修改第一、二条链表
-        slow.value = slow.value.replace(matchChar1, "")
-        fast.value = fast.value.replace(matchChar2, "")
-
-        slow.relatedNode.value = slow.relatedNode.value!.replace(matchChar1, "")
-        fast.relatedNode.value = fast.relatedNode.value!.replace(matchChar2, "")
-
-        let specialNode = createNodeBySpeicalChar(slow, matchChar1)
-        let tempNext = slow.relatedNode.next!.next!.next!.next
-
-        slow.relatedNode.next = specialNode
-        specialNode!.next = tempNext
-      } else {
-        // 处理加粗、斜体、删除线
-        if(matchChar1){
-          // 1. 修改第一、二条链表
-          slow.value = slow.value.replace(matchChar1, "")
-          fast.value = fast.value.replace(matchChar1, "")
-          slow.relatedNode.value = slow.relatedNode.value!.replace(matchChar1, "")
-          fast.relatedNode.value = fast.relatedNode.value!.replace(matchChar1, "")
-
-          console.log(slow.relatedNode.value);
-          console.log(fast.relatedNode.value);
-
-          let specialNode = createNodeBySpeicalChar(slow, matchChar1)
-          let tempNext = slow.relatedNode.next!.next!.next
-
-          slow.relatedNode.next = specialNode
-          specialNode!.next = tempNext
-
+      if(char.includes("~")){
+        let count = 1
+        let index = i
+        while(char === string[index + count]){
+          count += 1
         }
 
-      }
-    }
-    // @ts-ignore
-    slow = slow.next
-
-  }
-
-  // 删除链表1的空节点
-  let removeSlow = charLinkedList
-  while(removeSlow){
-    let removeFast = removeSlow.next
-    if(removeFast && removeSlow){
-      // @ts-ignore
-      if(removeFast.constructor === TextNode && removeFast.value === ''){
-        // @ts-ignore
-        let tempNext = removeSlow.next.next
-        removeSlow.next = tempNext
-
+        addSpecialCharIndex(spcecialCharArray, index, count)
       }
 
-    }
-    // @ts-ignore
-    removeSlow = removeSlow.next
-  }
-  console.log('最终字符串链表结果', charLinkedList);
+      if(char.includes('!')){
+        let nextChar = string[i + 1]
+        if(nextChar && nextChar === '['){
+          addSpecialCharIndex(spcecialCharArray, i, i+2)
+        }
+      }
+      if(char.includes(']')){
+        addSpecialCharIndex(spcecialCharArray, i, i+1)
+      }
 
+      if(char.includes('(')){
+        let count = 1
+        let index = i
+        while(!(')'.includes(string[index + count])) || index + count <char.length){
+          count += 1
+        }
+        addSpecialCharIndex(spcecialCharArray, index, count + index+1)
+
+      }
+
+    }
+    return {spcecialCharArray}
+  }
+
+  function createTwoLinkedList(spcecialCharArray: number[][]){
+    // todo bug: 遇到 1***~2~**3*4*5 会出现问题
+    let allCharLinkedListHead = null;
+    let allCharLinkedListList = null;
+
+    let specialCharLinkedListHead = null;
+    let specialCharLinkedListList = null;
+
+    for(let i = 0;i<=spcecialCharArray.length - 1;i++){
+      let currentArray = spcecialCharArray[i]
+      let nextArray = spcecialCharArray[i+1]
+
+      let specialChar = string.slice(...currentArray)
+      let specialCharNode = new TextNode({value: specialChar})
+      let specialCharNode1 = new SpecialTextNode({value: specialChar, relatedNode: specialCharNode})
+
+
+      if(!allCharLinkedListHead){
+        allCharLinkedListHead = specialCharNode
+        allCharLinkedListList = specialCharNode
+      } else {
+        allCharLinkedListHead.next = specialCharNode
+        allCharLinkedListHead = specialCharNode
+      }
+
+      if(!specialCharLinkedListHead){
+        specialCharLinkedListHead = specialCharNode1
+        specialCharLinkedListList = specialCharNode1
+      } else {
+        specialCharLinkedListHead.next = specialCharNode1
+        specialCharLinkedListHead = specialCharNode1
+      }
+
+
+      if(currentArray && nextArray){
+        if(currentArray[1] !== nextArray[0]){
+          // 存在普通字符串
+          let specialChar = string.slice(currentArray[1], nextArray[0])
+          let textNode = new TextNode({value: specialChar})
+          // console.log('所有', textNode);
+          if(!allCharLinkedListHead){
+            allCharLinkedListHead = textNode
+            allCharLinkedListList = textNode
+          } else {
+            allCharLinkedListHead.next = textNode
+            allCharLinkedListHead = textNode
+          }
+
+
+        }
+      }
+    }
+    console.log(allCharLinkedListList, specialCharLinkedListList);
+    return {allCharLinkedListList, specialCharLinkedListList};
+  }
 
 }
 

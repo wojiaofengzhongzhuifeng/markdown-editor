@@ -16,4 +16,13 @@ export default class LinkedNode {
     this.firstChild = obj.firstChild
     this.value = obj.value
   }
+  getString(){
+    let resultStringList = []
+    let currentPoint: LinkedNode | undefined = this
+    while(currentPoint){
+      resultStringList.push(currentPoint.value)
+      currentPoint = currentPoint.next
+    }
+    return resultStringList
+  }
 }
